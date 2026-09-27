@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Librería de Audiolibros</title>
+  <style>
+    :root {
+      --bg: #121316;
+      --card-bg: #1c1e24;
+      --border: #2c2f38;
+      --text: #f0f2f5;
+      --text-muted: #9aa0a6;
+      --accent: #5e81ac;
+      --accent-hover: #81a1c1;
+      --active-track: #2e3440;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 120px; /* Margen para no tapar contenido con el reproductor */
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(28, 30, 36, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Control de Vistas */
+    .view-section {
+      display: none;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    /* -------------------------------------------
+       VISTA 1: HOME (GRILLA DE LIBROS)
+    ------------------------------------------- */
+    .home-header {
+      margin-bottom: 2rem;
+    }
+
+    .home-header h2 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .home-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 2rem 1.5rem;
+    }
+
+    .book-card {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: transform 0.2s ease;
+      color: inherit;
+      outline: none;
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-cover-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1.4;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #242730;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+    }
+
+    .card-cover-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover .card-cover-wrapper img {
+      transform: scale(1.04);
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .card-author {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* -------------------------------------------
+       VISTA 2: DETALLE DEL LIBRO (EPISODIOS)
+    ------------------------------------------- */
+    .btn-back {
+      background: none;
+      border: none;
+      color: var(--accent-hover);
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .btn-back:hover {
+      text-decoration: underline;
+    }
+
+    .book-header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      display: flex;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .book-cover-large {
+      width: 150px;
+      aspect-ratio: 1 / 1.4;
+      border-radius: 8px;
+      object-fit: cover;
+      background-color: #2e3440;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .book-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+
+    .book-title-lg {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .book-meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .book-desc {
+      margin: 0.5rem 0 1.25rem;
+      font-size: 0.95rem;
+      color: #d8dee9;
+      line-height: 1.5;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent-hover);
+      text-decoration: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      width: fit-content;
+      transition: all 0.2s ease;
+    }
+
+    .btn-download:hover {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Lista de capítulos */
+    .episodes-container h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .episode-list {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .episode-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .episode-item:last-child {
+      border-bottom: none;
+    }
+
+    .episode-item:hover {
+      background-color: var(--active-track);
+    }
+
+    .episode-item.playing {
+      background-color: var(--active-track);
+      border-left: 4px solid var(--accent);
+    }
+
+    .episode-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .episode-num {
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      width: 24px;
+      text-align: center;
+    }
+
+    .episode-name {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .episode-duration {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* -------------------------------------------
+       REPRODUCTOR FIJO INFERIOR
+    ------------------------------------------- */
+    .player-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181a20;
+      border-top: 1px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 100;
+    }
+
+    .player-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .now-playing {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      max-width: 320px;
+    }
+
+    .now-playing-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .now-playing-book {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-ctrl {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.4rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .btn-ctrl:hover {
+      color: var(--accent-hover);
+    }
+
+    .btn-play-pause {
+      background: var(--text);
+      color: var(--bg);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .btn-play-pause:hover {
+      background: #e5e9f0;
+      color: var(--bg);
+    }
+
+    .progress-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .time-stamp {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      min-width: 40px;
+    }
+
+    input[type="range"] {
+      flex-grow: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+      height: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .book-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .btn-download {
+        margin: 0 auto;
+      }
+      .player-top {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .now-playing {
+        text-align: center;
+      }
+      .library-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="#" class="brand" id="brand-link">
+      <span>🎧</span>
+      <span>Librería de Audio</span>
+    </a>
+  </header>
+
+  <div class="container">
+    <!-- VISTA 1: HOME (LIBRERÍA / PORTADAS) -->
+    <section id="view-home" class="view-section active">
+      <div class="home-header">
+        <h2>Catálogo disponible</h2>
+        <p>Selecciona un libro para escuchar sus episodios o descargarlo completo.</p>
+      </div>
+      <div class="library-grid" id="library-grid">
+        <!-- Generado dinámicamente -->
+      </div>
+    </section>
+
+    <!-- VISTA 2: DETALLE DEL LIBRO SELECCIONADO -->
+    <section id="view-detail" class="view-section">
+      <button class="btn-back" id="btn-back-home">← Volver al catálogo</button>
+      
+      <div class="book-header" id="book-header">
+        <!-- Inyectado por JS -->
+      </div>
+
+      <div class="episodes-container">
+        <h3>Capítulos</h3>
+        <div class="episode-list" id="episode-list">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- REPRODUCTOR PERSISTENTE -->
+  <div class="player-dock">
+    <div class="player-top">
+      <div class="now-playing">
+        <span class="now-playing-title" id="player-title">Selecciona un episodio</span>
+        <span class="now-playing-book" id="player-book">-</span>
+      </div>
+
+      <div class="player-controls">
+        <button class="btn-ctrl" id="btn-back15" title="Retroceder 15s">⏪ 15s</button>
+        <button class="btn-ctrl btn-play-pause" id="btn-toggle-play" title="Reproducir/Pausar">▶</button>
+        <button class="btn-ctrl" id="btn-fwd15" title="Adelantar 15s">15s ⏩</button>
+      </div>
+
+      <div style="width: 80px;"></div>
+    </div>
+
+    <div class="progress-bar-container">
+      <span class="time-stamp" id="curr-time">0:00</span>
+      <input type="range" id="seek-bar" value="0" min="0" max="100" step="0.1" />
+      <span class="time-stamp" id="total-time">0:00</span>
+    </div>
+
+    <audio id="audio-engine" preload="metadata"></audio>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // CATÁLOGO DE AUDIOLIBROS
+    // Podés sumar todos los libros que quieras acá
+    // -------------------------------------------------------------
+    const LIBRARY = [
+      {
+        id: "el-principito",
+        titulo: "El Principito",
+        autor: "Antoine de Saint-Exupéry",
+        narrador: "Paula",
+        portada: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80",
+        descripcion: "Grabación íntegra en español con ambientación musical sutil.",
+        archivoDescarga: "https://example.com/descargas/el-principito-completo.zip",
+        episodios: [
+          {
+            numero: 1,
+            titulo: "Capítulo 1: El dibujo del elefante",
+            duracionAprox: "03:15",
+            url: "https://ia800905.us.archive.org/19/items/FREE_background_music_dhalius/backsound.mp3"
+          },
+          {
+            numero: 2,
+            titulo: "Capítulo 2: Encuentro con el Principito",
+            duracionAprox: "04:30",
+            url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+          }
+        ]
+      },
+      {
+        id: "relatos-misterio",
+        titulo: "Relatos de Misterio",
+        autor: "Edgar Allan Poe",
+        narrador: "Paula",
+        portada: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&q=80",
+        descripcion: "Antología de cuentos clásicos de suspenso y terror psicológico.",
+        archivoDescarga: "https://example.com/descargas/poe-misterio.zip",
+        episodios: [
+          {
+            numero: 1,
+            titulo: "El corazón delator",
+            duracionAprox: "14:10",
+            url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+          }
+        ]
+      }
+    ];
+
+    // Elementos del DOM
+    const viewHome = document.getElementById("view-home");
+    const viewDetail = document.getElementById("view-detail");
+    const libraryGrid = document.getElementById("library-grid");
+    const bookHeader = document.getElementById("book-header");
+    const episodeList = document.getElementById("episode-list");
+    const btnBackHome = document.getElementById("btn-back-home");
+    const brandLink = document.getElementById("brand-link");
+
+    // Audio & Player
+    const audio = document.getElementById("audio-engine");
+    const playBtn = document.getElementById("btn-toggle-play");
+    const back15Btn = document.getElementById("btn-back15");
+    const fwd15Btn = document.getElementById("btn-fwd15");
+    const seekBar = document.getElementById("seek-bar");
+    const currTimeEl = document.getElementById("curr-time");
+    const totalTimeEl = document.getElementById("total-time");
+    const playerTitle = document.getElementById("player-title");
+    const playerBook = document.getElementById("player-book");
+
+    let currentSelectedBook = null;
+    let playingBookId = null;
+    let playingEpisodeIndex = -1;
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // -------------------------------------------------------------
+    // NAVEGACIÓN Y VISTAS
+    // -------------------------------------------------------------
+    function showHomeView() {
+      viewDetail.classList.remove("active");
+      viewHome.classList.add("active");
+      window.location.hash = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showDetailView(book) {
+      currentSelectedBook = book;
+      renderBookDetail(book);
+      viewHome.classList.remove("active");
+      viewDetail.classList.add("active");
+      window.location.hash = book.id;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // -------------------------------------------------------------
+    // RENDERIZADO
+    // -------------------------------------------------------------
+    function renderHomeGrid() {
+      libraryGrid.innerHTML = "";
+      LIBRARY.forEach((book) => {
+        const card = document.createElement("button");
+        card.className = "book-card";
+        card.innerHTML = `
+          <div class="card-cover-wrapper">
+            <img src="${book.portada}" alt="${book.titulo}" loading="lazy" />
+          </div>
+          <div class="card-info">
+            <span class="card-title">${book.titulo}</span>
+            <span class="card-author">${book.autor}</span>
+          </div>
+        `;
+        card.onclick = () => showDetailView(book);
+        libraryGrid.appendChild(card);
+      });
+    }
+
+    function renderBookDetail(book) {
+      bookHeader.innerHTML = `
+        <img class="book-cover-large" src="${book.portada}" alt="${book.titulo}" />
+        <div class="book-details">
+          <h2 class="book-title-lg">${book.titulo}</h2>
+          <span class="book-meta">Autor: ${book.autor} • Narración: ${book.narrador}</span>
+          <p class="book-desc">${book.descripcion}</p>
+          <a href="${book.archivoDescarga}" class="btn-download" download title="Descargar libro completo">
+            ⬇ Descargar libro completo (.ZIP)
+          </a>
+        </div>
+      `;
+
+      renderEpisodeList();
+    }
+
+    function renderEpisodeList() {
+      if (!currentSelectedBook) return;
+      episodeList.innerHTML = "";
+
+      currentSelectedBook.episodios.forEach((ep, idx) => {
+        const isPlayingThis = (playingBookId === currentSelectedBook.id && playingEpisodeIndex === idx);
+        const item = document.createElement("div");
+        item.className = `episode-item ${isPlayingThis ? "playing" : ""}`;
+
+        item.innerHTML = `
+          <div class="episode-info">
+            <span class="episode-num">${isPlayingThis && !audio.paused ? "🔊" : ep.numero}</span>
+            <span class="episode-name">${ep.titulo}</span>
+          </div>
+          <span class="episode-duration">${ep.duracionAprox}</span>
+        `;
+
+        item.onclick = () => playEpisode(currentSelectedBook, idx);
+        episodeList.appendChild(item);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // REPRODUCCIÓN
+    // -------------------------------------------------------------
+    function playEpisode(book, epIndex) {
+      const ep = book.episodios[epIndex];
+
+      playingBookId = book.id;
+      playingEpisodeIndex = epIndex;
+      audio.src = ep.url;
+      playerTitle.textContent = ep.titulo;
+      playerBook.textContent = book.titulo;
+
+      audio.play().then(() => {
+        playBtn.textContent = "⏸";
+        if (currentSelectedBook && currentSelectedBook.id === book.id) {
+          renderEpisodeList();
+        }
+      }).catch(err => console.log("Interacción requerida:", err));
+    }
+
+    playBtn.onclick = () => {
+      if (!audio.src) {
+        if (LIBRARY.length > 0 && LIBRARY[0].episodios.length > 0) {
+          playEpisode(LIBRARY[0], 0);
+        }
+        return;
+      }
+
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = "⏸";
+      } else {
+        audio.pause();
+        playBtn.textContent = "▶";
+      }
+
+      if (currentSelectedBook) renderEpisodeList();
+    };
+
+    back15Btn.onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 15); };
+    fwd15Btn.onclick = () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); };
+
+    audio.ontimeupdate = () => {
+      if (!isNaN(audio.duration)) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        seekBar.value = percent;
+        currTimeEl.textContent = formatTime(audio.currentTime);
+        totalTimeEl.textContent = formatTime(audio.duration);
+      }
+    };
+
+    seekBar.oninput = () => {
+      if (!isNaN(audio.duration)) {
+        audio.currentTime = (seekBar.value / 100) * audio.duration;
+      }
+    };
+
+    audio.onended = () => {
+      const currentBook = LIBRARY.find(b => b.id === playingBookId);
+      if (currentBook && playingEpisodeIndex + 1 < currentBook.episodios.length) {
+        playEpisode(currentBook, playingEpisodeIndex + 1);
+      } else {
+        playBtn.textContent = "▶";
+        renderEpisodeList();
+      }
+    };
+
+    // Eventos de Navegación
+    btnBackHome.onclick = showHomeView;
+    brandLink.onclick = (e) => {
+      e.preventDefault();
+      showHomeView();
+    };
+
+    // Detectar hash al cargar la web (ej: /#el-principito)
+    function checkHashRoute() {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        const found = LIBRARY.find(b => b.id === hash);
+        if (found) {
+          showDetailView(found);
+          return;
+        }
+      }
+      showHomeView();
+    }
+
+    // Inicialización
+    renderHomeGrid();
+    checkHashRoute();
+  </script>
+</body>
+</html>
