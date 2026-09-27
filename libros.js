@@ -7,6 +7,7 @@ const LIBRARY = [
     portada: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80",
     descripcion: "Grabación íntegra en español con ambientación musical sutil.",
     archivoDescarga: "https://example.com/descargas/el-principito-completo.zip",
+    tags: ["Español", "Novela"], // 👈 Etiquetas aquí
     episodios: [
       {
         numero: 1,
@@ -30,6 +31,7 @@ const LIBRARY = [
     portada: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&q=80",
     descripcion: "Antología de cuentos clásicos de suspenso y terror psicológico.",
     archivoDescarga: "https://example.com/descargas/poe-misterio.zip",
+    tags: ["Español", "Cuento"], // 👈 Etiquetas aquí
     episodios: [
       {
         numero: 1,
