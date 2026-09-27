@@ -490,7 +490,6 @@
   <script>
     // -------------------------------------------------------------
     // CATÁLOGO DE AUDIOLIBROS
-    // Podés sumar todos los libros que quieras acá
     // -------------------------------------------------------------
     const LIBRARY = [
       {
@@ -567,23 +566,55 @@
     }
 
     // -------------------------------------------------------------
-    // NAVEGACIÓN Y VISTAS
+    // NAVEGACIÓN COMPATIBLE CON HISTORIAL (BOTÓN ATRÁS DEL NAVEGADOR)
     // -------------------------------------------------------------
-    function showHomeView() {
-      viewDetail.classList.remove("active");
-      viewHome.classList.add("active");
-      window.location.hash = "";
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    function renderRoute() {
+      const hash = window.location.hash.replace("#", "").trim();
+
+      if (!hash) {
+        viewDetail.classList.remove("active");
+        viewHome.classList.add("active");
+        currentSelectedBook = null;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      const found = LIBRARY.find(b => b.id === hash);
+      if (found) {
+        currentSelectedBook = found;
+        renderBookDetail(found);
+        viewHome.classList.remove("active");
+        viewDetail.classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        history.replaceState(null, "", window.location.pathname);
+        renderRoute();
+      }
     }
 
-    function showDetailView(book) {
-      currentSelectedBook = book;
-      renderBookDetail(book);
-      viewHome.classList.remove("active");
-      viewDetail.classList.add("active");
-      window.location.hash = book.id;
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    function navigateToBook(book) {
+      if (window.location.hash !== `#${book.id}`) {
+        window.location.hash = book.id;
+      } else {
+        renderRoute();
+      }
     }
+
+    function navigateToHome() {
+      if (window.location.hash) {
+        history.pushState(null, "", window.location.pathname);
+        renderRoute();
+      }
+    }
+
+    window.addEventListener("popstate", renderRoute);
+    window.addEventListener("hashchange", renderRoute);
+
+    btnBackHome.onclick = navigateToHome;
+    brandLink.onclick = (e) => {
+      e.preventDefault();
+      navigateToHome();
+    };
 
     // -------------------------------------------------------------
     // RENDERIZADO
@@ -602,7 +633,7 @@
             <span class="card-author">${book.autor}</span>
           </div>
         `;
-        card.onclick = () => showDetailView(book);
+        card.onclick = () => navigateToBook(book);
         libraryGrid.appendChild(card);
       });
     }
@@ -712,29 +743,9 @@
       }
     };
 
-    // Eventos de Navegación
-    btnBackHome.onclick = showHomeView;
-    brandLink.onclick = (e) => {
-      e.preventDefault();
-      showHomeView();
-    };
-
-    // Detectar hash al cargar la web (ej: /#el-principito)
-    function checkHashRoute() {
-      const hash = window.location.hash.replace("#", "");
-      if (hash) {
-        const found = LIBRARY.find(b => b.id === hash);
-        if (found) {
-          showDetailView(found);
-          return;
-        }
-      }
-      showHomeView();
-    }
-
     // Inicialización
     renderHomeGrid();
-    checkHashRoute();
+    renderRoute();
   </script>
 </body>
 </html>
