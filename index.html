@@ -14,6 +14,8 @@
       --accent: #5e81ac;
       --accent-hover: #81a1c1;
       --active-track: #2e3440;
+      --tag-bg: #2b303c;
+      --tag-hover: #3b4252;
     }
 
     * {
@@ -26,12 +28,13 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 120px; /* Margen para no tapar contenido con el reproductor */
+      padding-bottom: 120px;
       min-height: 100vh;
     }
 
+    /* HEADER Y MENÚ */
     header {
-      padding: 1.25rem 2rem;
+      padding: 1rem 2rem;
       border-bottom: 1px solid var(--border);
       background-color: rgba(28, 30, 36, 0.95);
       position: sticky;
@@ -41,6 +44,7 @@
       justify-content: space-between;
       align-items: center;
       backdrop-filter: blur(8px);
+      gap: 1rem;
     }
 
     .brand {
@@ -48,10 +52,49 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text);
       text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: var(--card-bg);
+      border-color: var(--border);
+    }
+
+    .lang-select {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .lang-select:focus {
+      border-color: var(--accent);
     }
 
     .container {
@@ -60,7 +103,7 @@
       padding: 0 1.5rem;
     }
 
-    /* Control de Vistas */
+    /* VISTAS */
     .view-section {
       display: none;
     }
@@ -68,23 +111,79 @@
       display: block;
     }
 
-    /* -------------------------------------------
-       VISTA 1: HOME (GRILLA DE LIBROS)
-    ------------------------------------------- */
-    .home-header {
+    /* BARRA DE BÚSQUEDA Y FILTROS */
+    .search-filter-bar {
       margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .home-header h2 {
-      font-size: 1.6rem;
-      margin-bottom: 0.5rem;
+    .search-input-wrapper {
+      position: relative;
+      width: 100%;
     }
 
-    .home-header p {
-      color: var(--text-muted);
+    .search-input {
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
       font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease;
     }
 
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .active-filter-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-clear-filter {
+      background: none;
+      border: none;
+      color: var(--accent-hover);
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.85rem;
+    }
+
+    /* TAGS */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .tag-badge {
+      background-color: var(--tag-bg);
+      color: #d8dee9;
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .tag-badge:hover {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* GRILLA HOME */
     .library-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -94,18 +193,11 @@
     .book-card {
       background: transparent;
       border: none;
-      cursor: pointer;
       text-align: left;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      transition: transform 0.2s ease;
+      gap: 0.6rem;
       color: inherit;
-      outline: none;
-    }
-
-    .book-card:hover {
-      transform: translateY(-4px);
     }
 
     .card-cover-wrapper {
@@ -117,6 +209,12 @@
       background-color: #242730;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .card-cover-wrapper:hover {
+      transform: translateY(-4px);
     }
 
     .card-cover-wrapper img {
@@ -124,24 +222,18 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.3s ease;
-    }
-
-    .book-card:hover .card-cover-wrapper img {
-      transform: scale(1.04);
-    }
-
-    .card-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
     }
 
     .card-title {
       font-size: 1rem;
       font-weight: 600;
       color: var(--text);
+      cursor: pointer;
       line-height: 1.3;
+    }
+
+    .card-title:hover {
+      color: var(--accent-hover);
     }
 
     .card-author {
@@ -149,9 +241,7 @@
       color: var(--text-muted);
     }
 
-    /* -------------------------------------------
-       VISTA 2: DETALLE DEL LIBRO (EPISODIOS)
-    ------------------------------------------- */
+    /* FICHA DETALLE */
     .btn-back {
       background: none;
       border: none;
@@ -193,7 +283,7 @@
     .book-details {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.4rem;
       flex-grow: 1;
     }
 
@@ -209,7 +299,7 @@
     }
 
     .book-desc {
-      margin: 0.5rem 0 1.25rem;
+      margin: 0.5rem 0 1rem;
       font-size: 0.95rem;
       color: #d8dee9;
       line-height: 1.5;
@@ -229,6 +319,7 @@
       font-size: 0.9rem;
       width: fit-content;
       transition: all 0.2s ease;
+      margin-top: 0.5rem;
     }
 
     .btn-download:hover {
@@ -236,7 +327,7 @@
       color: #fff;
     }
 
-    /* Lista de capítulos */
+    /* LISTA CAPÍTULOS */
     .episodes-container h3 {
       font-size: 1.2rem;
       margin-bottom: 1rem;
@@ -295,9 +386,25 @@
       color: var(--text-muted);
     }
 
-    /* -------------------------------------------
-       REPRODUCTOR FIJO INFERIOR
-    ------------------------------------------- */
+    /* SECCIÓN ABOUT ME */
+    .about-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .about-card h2 {
+      margin-bottom: 1rem;
+    }
+
+    .about-card p {
+      color: #d8dee9;
+      margin-bottom: 1rem;
+    }
+
+    /* REPRODUCTOR */
     .player-dock {
       position: fixed;
       bottom: 0;
@@ -356,7 +463,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.2s ease;
     }
 
     .btn-ctrl:hover {
@@ -399,7 +505,10 @@
       height: 5px;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
+      header {
+        flex-wrap: wrap;
+      }
       .book-header {
         flex-direction: column;
         align-items: center;
@@ -407,6 +516,9 @@
       }
       .btn-download {
         margin: 0 auto;
+      }
+      .tags-container {
+        justify-content: center;
       }
       .player-top {
         flex-direction: column;
@@ -425,38 +537,65 @@
 </head>
 <body>
 
+  <!-- HEADER -->
   <header>
     <a href="#" class="brand" id="brand-link">
       <span>🎧</span>
       <span>Librería de Audio</span>
     </a>
+
+    <nav class="nav-menu">
+      <button class="nav-btn" id="nav-catalog">Catálogo</button>
+      <select class="lang-select" id="nav-lang">
+        <option value="all">Idioma: Todos</option>
+        <option value="español">Español</option>
+        <option value="inglés">Inglés</option>
+      </select>
+      <button class="nav-btn" id="nav-about">Sobre mí</button>
+    </nav>
   </header>
 
   <div class="container">
-    <!-- VISTA 1: HOME (LIBRERÍA / PORTADAS) -->
+    <!-- VISTA 1: HOME (CATÁLOGO + BÚSQUEDA) -->
     <section id="view-home" class="view-section active">
-      <div class="home-header">
-        <h2>Catálogo disponible</h2>
-        <p>Selecciona un libro para escuchar sus episodios o descargarlo completo.</p>
+      <div class="search-filter-bar">
+        <div class="search-input-wrapper">
+          <input type="text" class="search-input" id="search-input" placeholder="🔍 Buscar por título, autor o etiqueta (ej: cuento, novela)..." />
+        </div>
+        <div class="active-filter-indicator" id="filter-indicator" style="display: none;">
+          <span id="filter-text"></span>
+          <button class="btn-clear-filter" id="btn-clear-filter">✕ Quitar filtro</button>
+        </div>
       </div>
+
       <div class="library-grid" id="library-grid">
-        <!-- Generado dinámicamente -->
+        <!-- Renderizado dinámico -->
       </div>
     </section>
 
-    <!-- VISTA 2: DETALLE DEL LIBRO SELECCIONADO -->
+    <!-- VISTA 2: DETALLE DEL LIBRO -->
     <section id="view-detail" class="view-section">
       <button class="btn-back" id="btn-back-home">← Volver al catálogo</button>
       
       <div class="book-header" id="book-header">
-        <!-- Inyectado por JS -->
+        <!-- Renderizado dinámico -->
       </div>
 
       <div class="episodes-container">
         <h3>Capítulos</h3>
         <div class="episode-list" id="episode-list">
-          <!-- Inyectado por JS -->
+          <!-- Renderizado dinámico -->
         </div>
+      </div>
+    </section>
+
+    <!-- VISTA 3: SOBRE MÍ -->
+    <section id="view-about" class="view-section">
+      <button class="btn-back" id="btn-back-about">← Volver al catálogo</button>
+      <div class="about-card">
+        <h2>Sobre este proyecto</h2>
+        <p>¡Hola! Te doy la bienvenida a mi espacio de grabaciones y audiolibros independientes.</p>
+        <p>Acá comparto narraciones completas y lecturas por capítulos de cuentos clásicos, novelas y obras literarias en español e inglés, preparadas para escuchar directamente en la web o para descargar y disfrutar sin conexión.</p>
       </div>
     </section>
   </div>
@@ -487,18 +626,34 @@
     <audio id="audio-engine" preload="metadata"></audio>
   </div>
 
+  <!-- CATÁLOGO EXTERNO -->
   <script src="libros.js"></script>
 
+  <!-- LÓGICA DE APLICACIÓN -->
   <script>
-
     // Elementos del DOM
     const viewHome = document.getElementById("view-home");
     const viewDetail = document.getElementById("view-detail");
+    const viewAbout = document.getElementById("view-about");
     const libraryGrid = document.getElementById("library-grid");
     const bookHeader = document.getElementById("book-header");
     const episodeList = document.getElementById("episode-list");
     const btnBackHome = document.getElementById("btn-back-home");
+    const btnBackAbout = document.getElementById("btn-back-about");
     const brandLink = document.getElementById("brand-link");
+    const navCatalog = document.getElementById("nav-catalog");
+    const navAbout = document.getElementById("nav-about");
+    const navLang = document.getElementById("nav-lang");
+
+    // Búsqueda y Filtros
+    const searchInput = document.getElementById("search-input");
+    const filterIndicator = document.getElementById("filter-indicator");
+    const filterText = document.getElementById("filter-text");
+    const btnClearFilter = document.getElementById("btn-clear-filter");
+
+    let activeTagFilter = "";
+    let activeSearchQuery = "";
+    let activeLangFilter = "all";
 
     // Audio & Player
     const audio = document.getElementById("audio-engine");
@@ -522,75 +677,120 @@
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
-    // -------------------------------------------------------------
-    // NAVEGACIÓN COMPATIBLE CON HISTORIAL (BOTÓN ATRÁS DEL NAVEGADOR)
-    // -------------------------------------------------------------
-    function renderRoute() {
-      const hash = window.location.hash.replace("#", "").trim();
+    // NAVEGACIÓN Y VISTAS
+    function switchView(viewName) {
+      viewHome.classList.remove("active");
+      viewDetail.classList.remove("active");
+      viewAbout.classList.remove("active");
 
-      if (!hash) {
-        viewDetail.classList.remove("active");
+      if (viewName === "about") {
+        viewAbout.classList.add("active");
+        window.location.hash = "about";
+      } else if (viewName === "detail") {
+        viewDetail.classList.add("active");
+      } else {
         viewHome.classList.add("active");
         currentSelectedBook = null;
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.location.hash = "";
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showDetailView(book) {
+      currentSelectedBook = book;
+      renderBookDetail(book);
+      switchView("detail");
+      window.location.hash = book.id;
+    }
+
+    // FILTROS Y BÚSQUEDA
+    function normalize(str) {
+      return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function getFilteredBooks() {
+      return LIBRARY.filter(book => {
+        const titleNorm = normalize(book.titulo);
+        const authorNorm = normalize(book.autor);
+        const tagsNorm = (book.tags || []).map(t => normalize(t));
+
+        // Filtro por idioma
+        if (activeLangFilter !== "all") {
+          const hasLang = tagsNorm.some(t => t.includes(normalize(activeLangFilter)));
+          if (!hasLang) return false;
+        }
+
+        // Filtro por etiqueta clickeada
+        if (activeTagFilter) {
+          const matchTag = tagsNorm.includes(normalize(activeTagFilter));
+          if (!matchTag) return false;
+        }
+
+        // Filtro por texto en el buscador
+        if (activeSearchQuery) {
+          const q = normalize(activeSearchQuery);
+          const matchTitle = titleNorm.includes(q);
+          const matchAuthor = authorNorm.includes(q);
+          const matchAnyTag = tagsNorm.some(t => t.includes(q));
+          if (!matchTitle && !matchAuthor && !matchAnyTag) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function applyTagFilter(tag) {
+      activeTagFilter = tag;
+      activeSearchQuery = "";
+      searchInput.value = "";
+      switchView("home");
+      updateFilterUI();
+      renderHomeGrid();
+    }
+
+    function updateFilterUI() {
+      if (activeTagFilter) {
+        filterText.textContent = `Mostrando audiolibros con la etiqueta: "${activeTagFilter}"`;
+        filterIndicator.style.display = "flex";
+      } else {
+        filterIndicator.style.display = "none";
+      }
+    }
+
+    function createTagsHtml(tags) {
+      if (!tags || tags.length === 0) return "";
+      return `
+        <div class="tags-container">
+          ${tags.map(tag => `<span class="tag-badge" onclick="event.stopPropagation(); applyTagFilter('${tag}')">${tag}</span>`).join("")}
+        </div>
+      `;
+    }
+
+    // RENDERIZADO
+    function renderHomeGrid() {
+      libraryGrid.innerHTML = "";
+      const filtered = getFilteredBooks();
+
+      if (filtered.length === 0) {
+        libraryGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 3rem 0;">No se encontraron audiolibros con los criterios seleccionados.</p>`;
         return;
       }
 
-      const found = LIBRARY.find(b => b.id === hash);
-      if (found) {
-        currentSelectedBook = found;
-        renderBookDetail(found);
-        viewHome.classList.remove("active");
-        viewDetail.classList.add("active");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        history.replaceState(null, "", window.location.pathname);
-        renderRoute();
-      }
-    }
-
-    function navigateToBook(book) {
-      if (window.location.hash !== `#${book.id}`) {
-        window.location.hash = book.id;
-      } else {
-        renderRoute();
-      }
-    }
-
-    function navigateToHome() {
-      if (window.location.hash) {
-        history.pushState(null, "", window.location.pathname);
-        renderRoute();
-      }
-    }
-
-    window.addEventListener("popstate", renderRoute);
-    window.addEventListener("hashchange", renderRoute);
-
-    btnBackHome.onclick = navigateToHome;
-    brandLink.onclick = (e) => {
-      e.preventDefault();
-      navigateToHome();
-    };
-
-    // -------------------------------------------------------------
-    // RENDERIZADO
-    // -------------------------------------------------------------
-    function renderHomeGrid() {
-      libraryGrid.innerHTML = "";
-      LIBRARY.forEach((book) => {
-        const card = document.createElement("button");
+      filtered.forEach((book) => {
+        const card = document.createElement("div");
         card.className = "book-card";
         card.innerHTML = `
           <div class="card-cover-wrapper">
             <img src="${book.portada}" alt="${book.titulo}" loading="lazy" />
           </div>
-          <div class="card-info">
-            <span class="card-title">${book.titulo}</span>
-            <span class="card-author">${book.autor}</span>
-          </div>
+          <span class="card-title">${book.titulo}</span>
+          <span class="card-author">${book.autor}</span>
+          ${createTagsHtml(book.tags)}
         `;
-        card.onclick = () => navigateToBook(book);
+
+        card.querySelector(".card-cover-wrapper").onclick = () => showDetailView(book);
+        card.querySelector(".card-title").onclick = () => showDetailView(book);
+
         libraryGrid.appendChild(card);
       });
     }
@@ -601,6 +801,7 @@
         <div class="book-details">
           <h2 class="book-title-lg">${book.titulo}</h2>
           <span class="book-meta">Autor: ${book.autor} • Narración: ${book.narrador}</span>
+          ${createTagsHtml(book.tags)}
           <p class="book-desc">${book.descripcion}</p>
           <a href="${book.archivoDescarga}" class="btn-download" download title="Descargar libro completo">
             ⬇ Descargar libro completo (.ZIP)
@@ -633,12 +834,9 @@
       });
     }
 
-    // -------------------------------------------------------------
-    // REPRODUCCIÓN
-    // -------------------------------------------------------------
+    // REPRODUCTOR
     function playEpisode(book, epIndex) {
       const ep = book.episodios[epIndex];
-
       playingBookId = book.id;
       playingEpisodeIndex = epIndex;
       audio.src = ep.url;
@@ -700,9 +898,60 @@
       }
     };
 
-    // Inicialización
+    // EVENTOS DE BÚSQUEDA Y MENÚ
+    searchInput.oninput = (e) => {
+      activeSearchQuery = e.target.value.trim();
+      renderHomeGrid();
+    };
+
+    btnClearFilter.onclick = () => {
+      activeTagFilter = "";
+      updateFilterUI();
+      renderHomeGrid();
+    };
+
+    navLang.onchange = (e) => {
+      activeLangFilter = e.target.value;
+      if (!viewHome.classList.contains("active")) {
+        switchView("home");
+      }
+      renderHomeGrid();
+    };
+
+    navCatalog.onclick = () => switchView("home");
+    navAbout.onclick = () => switchView("about");
+    btnBackHome.onclick = () => switchView("home");
+    btnBackAbout.onclick = () => switchView("home");
+    brandLink.onclick = (e) => {
+      e.preventDefault();
+      switchView("home");
+    };
+
+    // DETECCIÓN DE HASH (HISTORIAL)
+    function checkHashRoute() {
+      const hash = window.location.hash.replace("#", "").trim();
+      if (!hash) {
+        switchView("home");
+        return;
+      }
+      if (hash === "about") {
+        switchView("about");
+        return;
+      }
+      const found = LIBRARY.find(b => b.id === hash);
+      if (found) {
+        showDetailView(found);
+      } else {
+        switchView("home");
+      }
+    }
+
+    window.addEventListener("popstate", checkHashRoute);
+    window.addEventListener("hashchange", checkHashRoute);
+
+    // INICIALIZACIÓN
     renderHomeGrid();
-    renderRoute();
+    checkHashRoute();
   </script>
 </body>
 </html>
